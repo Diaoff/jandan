@@ -1278,7 +1278,37 @@ var table = {
                     $.modal.alertError(result.msg);
                 }
                 $.modal.closeLoading();
-            }
+            },
+            // 修改信息
+            view: function(id) {
+                table.set();
+                if($.common.isEmpty(id) && table.options.type == table_type.bootstrapTreeTable) {
+                    var row = $("#" + table.options.id).bootstrapTreeTable('getSelections')[0];
+                    if ($.common.isEmpty(row)) {
+                        $.modal.alertWarning("请至少选择一条记录");
+                        return;
+                    }
+                    var url = table.options.viewUrl.replace("{id}", row[table.options.uniqueId]);
+                    $.modal.open("查看" + table.options.modalName, url);
+                } else {
+                    $.modal.open("查看" + table.options.modalName, $.operate.viewUrl(id));
+                }
+            },
+            // 修改访问地址
+            viewUrl: function(id) {
+                var url = "/404.html";
+                if ($.common.isNotEmpty(id)) {
+                    url = table.options.viewUrl.replace("{id}", id);
+                } else {
+                    var id = $.common.isEmpty(table.options.uniqueId) ? $.table.selectFirstColumns() : $.table.selectColumns(table.options.uniqueId);
+                    if (id.length == 0) {
+                        $.modal.alertWarning("请至少选择一条记录");
+                        return;
+                    }
+                    url = table.options.viewUrl.replace("{id}", id);
+                }
+                return url;
+            },
         },
         // 校验封装处理
         validate: {

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.jandan.images.mapper.ImagesMapper">
+    
+    <resultMap type="Images" id="ImagesResult">
+        <result property="url"    column="url"    />
+        <result property="fullUrl"    column="full_url"    />
+        <result property="host"    column="host"    />
+        <result property="thumbSize"    column="thumb_size"    />
+        <result property="ext"    column="ext"    />
+        <result property="fileName"    column="file_name"    />
+        <result property="fdModelId"    column="fd_model_id"    />
+        <result property="fdModelName"    column="fd_model_name"    />
+    </resultMap>
+
+    <sql id="selectImagesVo">
+        select url, full_url, host, thumb_size, ext, file_name, fd_model_id, fd_model_name from images
+    </sql>
+
+    <select id="selectImagesList" parameterType="Images" resultMap="ImagesResult">
+        <include refid="selectImagesVo"/>
+        <where>  
+            <if test="url != null  and url != ''"> and url = #{url}</if>
+            <if test="fullUrl != null  and fullUrl != ''"> and full_url = #{fullUrl}</if>
+            <if test="host != null  and host != ''"> and host = #{host}</if>
+            <if test="thumbSize != null  and thumbSize != ''"> and thumb_size = #{thumbSize}</if>
+            <if test="ext != null  and ext != ''"> and ext = #{ext}</if>
+            <if test="fileName != null  and fileName != ''"> and file_name like concat('%', #{fileName}, '%')</if>
+            <if test="fdModelId != null  and fdModelId != ''"> and fd_model_id = #{fdModelId}</if>
+            <if test="fdModelName != null  and fdModelName != ''"> and fd_model_name like concat('%', #{fdModelName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectImagesById" parameterType="String" resultMap="ImagesResult">
+        <include refid="selectImagesVo"/>
+        where url = #{url}
+    </select>
+        
+    <insert id="insertImages" parameterType="Images">
+        insert into images
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="url != null">url,</if>
+            <if test="fullUrl != null">full_url,</if>
+            <if test="host != null">host,</if>
+            <if test="thumbSize != null">thumb_size,</if>
+            <if test="ext != null">ext,</if>
+            <if test="fileName != null">file_name,</if>
+            <if test="fdModelId != null">fd_model_id,</if>
+            <if test="fdModelName != null">fd_model_name,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="url != null">#{url},</if>
+            <if test="fullUrl != null">#{fullUrl},</if>
+            <if test="host != null">#{host},</if>
+            <if test="thumbSize != null">#{thumbSize},</if>
+            <if test="ext != null">#{ext},</if>
+            <if test="fileName != null">#{fileName},</if>
+            <if test="fdModelId != null">#{fdModelId},</if>
+            <if test="fdModelName != null">#{fdModelName},</if>
+         </trim>
+    </insert>
+
+    <update id="updateImages" parameterType="Images">
+        update images
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="fullUrl != null">full_url = #{fullUrl},</if>
+            <if test="host != null">host = #{host},</if>
+            <if test="thumbSize != null">thumb_size = #{thumbSize},</if>
+            <if test="ext != null">ext = #{ext},</if>
+            <if test="fileName != null">file_name = #{fileName},</if>
+            <if test="fdModelId != null">fd_model_id = #{fdModelId},</if>
+            <if test="fdModelName != null">fd_model_name = #{fdModelName},</if>
+        </trim>
+        where url = #{url}
+    </update>
+
+    <delete id="deleteImagesById" parameterType="String">
+        delete from images where url = #{url}
+    </delete>
+
+    <delete id="deleteImagesByIds" parameterType="String">
+        delete from images where url in 
+        <foreach item="url" collection="array" open="(" separator="," close=")">
+            #{url}
+        </foreach>
+    </delete>
+
+    <select id="selectImagesByModelId" parameterType="String" resultMap="ImagesResult">
+        <include refid="selectImagesVo"/>
+        where fd_model_id = #{fd_model_id}
+    </select>
+</mapper>

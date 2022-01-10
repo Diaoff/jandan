@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('图片列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>链接：</label>
+                                <input type="text" name="url"/>
+                            </li>
+                            <li>
+                                <label>完整链接：</label>
+                                <input type="text" name="fullUrl"/>
+                            </li>
+                            <li>
+                                <label>域名：</label>
+                                <input type="text" name="host"/>
+                            </li>
+                            <li>
+                                <label>thumb size：</label>
+                                <input type="text" name="thumbSize"/>
+                            </li>
+                            <li>
+                                <label>拓展名：</label>
+                                <input type="text" name="ext"/>
+                            </li>
+                            <li>
+                                <label>文件名：</label>
+                                <input type="text" name="fileName"/>
+                            </li>
+                            <li>
+                                <label>图片归属ID：</label>
+                                <input type="text" name="fdModelId"/>
+                            </li>
+                            <li>
+                                <label>图片归属域：</label>
+                                <input type="text" name="fdModelName"/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="jandan:images:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="jandan:images:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="jandan:images:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="jandan:images:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('jandan:images:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('jandan:images:remove')}]];
+        var prefix = ctx + "jandan/images";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "图片",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'url',
+                    title: '链接'
+                },
+                {
+                    field: 'fullUrl',
+                    title: '完整链接'
+                },
+                {
+                    field: 'host',
+                    title: '域名'
+                },
+                {
+                    field: 'thumbSize',
+                    title: 'thumb size'
+                },
+                {
+                    field: 'ext',
+                    title: '拓展名'
+                },
+                {
+                    field: 'fileName',
+                    title: '文件名'
+                },
+                {
+                    field: 'fdModelId',
+                    title: '图片归属ID'
+                },
+                {
+                    field: 'fdModelName',
+                    title: '图片归属域'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.url + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.url + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

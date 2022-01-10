@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改图片')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-images-edit" th:object="${images}">
+            <input name="url" th:field="*{url}" type="hidden">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">链接：</label>
+                <div class="col-sm-8">
+                    <input name="url" th:field="*{url}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">完整链接：</label>
+                <div class="col-sm-8">
+                    <input name="fullUrl" th:field="*{fullUrl}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">域名：</label>
+                <div class="col-sm-8">
+                    <input name="host" th:field="*{host}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">thumb size：</label>
+                <div class="col-sm-8">
+                    <input name="thumbSize" th:field="*{thumbSize}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">拓展名：</label>
+                <div class="col-sm-8">
+                    <input name="ext" th:field="*{ext}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">文件名：</label>
+                <div class="col-sm-8">
+                    <input name="fileName" th:field="*{fileName}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">图片归属ID：</label>
+                <div class="col-sm-8">
+                    <input name="fdModelId" th:field="*{fdModelId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">图片归属域：</label>
+                <div class="col-sm-8">
+                    <input name="fdModelName" th:field="*{fdModelName}" class="form-control" type="text">
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var prefix = ctx + "jandan/images";
+        $("#form-images-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-images-edit').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

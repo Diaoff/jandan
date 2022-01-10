@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('广场')"/>
+    <th:block th:include="include :: datetimepicker-css"/>
+    <th:block th:include="include :: summernote-css"/>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css}"/>
+    <style>
+        html {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            height: 100%
+        }
+
+        #app {
+            height: 100%;
+            overflow-y: scroll;
+        }
+
+        #app .hide {
+            display: none;
+        }
+
+        .block_div {
+            height: auto;
+            width: 50%;
+            margin: 0 25%;
+        }
+
+        .block_div .head {
+            display: inline-block;
+        }
+
+        .block_div .head .post {
+            color: #0000FF;
+        }
+
+        .block_div .head .author {
+            color: #000000;
+        }
+
+        .block_div .head .datetime {
+            color: hsl(108, 19%, 36%);
+            font-size: 0.8rem;
+        }
+
+        .block_div .head .like {
+            display: inline-block;
+        }
+
+        .block_div .head .like .number {
+            font-size: 0.8rem;
+        }
+
+        .block_div .content {
+            width: 50%;
+            /*white-space:*/
+        }
+
+        .block_div .block_img {
+            display: inline-block;
+        }
+
+        .block_div .block_img .small {
+            max-width: 100px;
+        }
+
+        #app .bootom_right {
+            position: fixed;
+            display: flex;
+            flex-direction: column;
+            left: 16px;
+            top: 6px;
+            /*z-index: 10;*/
+            padding: 3px 3px 0 3px;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+            /*background: #00ff00;*/
+            /*width: 150px;*/
+        }
+
+        #load_more {
+            height: auto;
+            width: 50%;
+            margin: 0 25%;
+        }
+
+        .search_form {
+            position: fixed;
+            margin-right: 10px;
+        }
+
+    </style>
+</head>
+<body class="gray-bg">
+<div class="container-div container mx-auto px-4" @scroll='scrollready($event)' id="app"
+     v:bind-class="{ hide : datas.length > 0 }">
+    <div class="row">
+        <div class="bootom_right float-left">{{datas.length}}/{{total}}条</div>
+        <div class="panel panel-default float-right search_form w-96 border-separate border border-green-800">
+            <table class="table-auto"  @change="changePost">
+                <tr>
+                    <td class="w-1/2">分区</td>
+                    <td class="w-1/2">
+                        <select v-model="postId">
+                            <option value="">所有</option>
+                            <option value="26402">无聊图</option>
+                            <option value="21183">随手拍</option>
+                            <option value="102312">树洞</option>
+                            <option value="108629">女装</option>
+                        </select>
+                    </td>
+                    <td class="w-1/2">作者</td>
+                    <td class="w-1/2">
+                        <input v-model="author">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="w-1/2">赞</td>
+                    <td class="w-1/2">
+                        <input v-model="votePositive">
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="panel panel-default block_div box-border border-4" v-for="item in datas" :key="item">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <div class="head">
+                        <span class="post">@{{item.postTitle}}</span>
+                        <span class="author">{{item.author}}</span>
+                        <span class="datetime">发表于 {{item.date}}</span>
+                        <span class="like">
+                                赞 <span class="number">{{item.votePositive}}</span>
+                                踩 <span class="number">{{item.voteNegative}}</span>
+                            </span>
+                    </div>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div calss="content">{{item.content}}</div>
+            </div>
+            <ul>
+                <li class="list-inline-item" v-for="image in item.images" :key="image">
+                    <div class="block_img">
+                        <img @click="switchImgSize($event)" src="" style="display: block" v-bind:x-src="image.url"
+                             referrerpolicy="no-referrer" class="small img-thumbnail " alt="Responsive image">
+                    </div>
+                </li>
+                <ul>
+        </div>
+        <div id="load_more">加载更多...</div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: datetimepicker-js"/>
+<th:block th:include="include :: summernote-js"/>
+<script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/vue.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
+<script type="text/javascript">
+    var vue = new Vue({
+        el: '#app',
+        data: {
+            pageSize: 30,
+            pageNum: 1,
+            datas: [],
+            total: 0,
+            lengthThreshold: 50,//当滑动到距离低端50px时，更新数据
+            timeThreshold: 300,
+            promise: null,
+            postId: null,
+            author: null,
+            votePositive:null
+        },
+        methods: {
+            // 滚动加载列表
+            scrollready: function (e) {
+                $("img").each(function () {
+                    if ($(this).attr("src") == "") {
+                        var newVar = ($(this).offset().top + $(this).width() / 2);
+                        var newVar2 = $(window).height() + $(window).scrollTop();
+                        if (newVar < newVar2) {
+                            $(this).attr("src", $(this).attr("x-src"))
+                        }
+                    }
+                });
+                if (this.shouldScroll(e)) {
+                    if (this.promise) {
+                        return;
+                    }
+                    // 进行加载
+                    this.list();
+                    // 防止多次滑动，频繁请求后台资源
+                    var self = this;
+                    this.promise = setTimeout(function () {
+                            self.promise = null;
+                        },
+                        this.timeThreshold)
+                }
+            },
+            shouldScroll: function (e) {
+                if (document.scrollTop === 0) {// 滑动距离为0，还没开始滑动
+                    return false;
+                }
+                return e.srcElement.scrollHeight - e.srcElement.clientHeight - e.srcElement.scrollTop < this.lengthThreshold;
+            }
+            ,
+            // 调用父组件请求资源服务
+            fn: function () {
+                this.$emit('list');
+            }
+            ,
+            changePost: function () {
+                this.datas = [];
+                this.pageNum = 1;
+                this.list();
+            }
+            ,
+            list: function () {
+                var url = '/jandan/comment/home';
+                var _self = this;
+                var data = {"pageSize": _self.pageSize, "pageNum": _self.pageNum, "postId": _self.postId,"author":_self.author,"votePositive":_self.votePositive};
+                if (window.console) {
+                    console.log(data)
+                }
+                $.ajax({
+                    url: url,
+                    async: false,
+                    type: 'POST',
+                    data: data,
+                    dataType: 'json',
+                    success: function (result) {
+                        if (window.console) {
+                            //console.log(result)
+                        }
+                        _self.total = result.total;
+                        _self.pageNum++;
+                        _self.datas = _self.datas.concat(result.rows);
+                    },
+                    error: function (result) {
+                        if (window.console) {
+                            console.log(result)
+                        }
+                    }
+                });
+            }
+            ,
+            switchImgSize: function (event) {
+                var obj = event.currentTarget;
+                var smallImg = $(obj).is(".small");
+                if (window.console) {
+                    console.log(smallImg)
+                }
+                if (smallImg) {
+                    $(obj).removeClass("small");
+                } else {
+                    $(obj).addClass("small");
+                }
+            }
+        },
+        created: function () {
+            //加载完毕,获取数据
+            this.list();
+        }
+    })
+</script>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/ajax/libs/layer/layer.min.js}"></script>
+<script type="text/javascript">
+    $('#pay-qrcode').click(function(){
+        var html=$(this).html();
+        parent.layer.open({
+            title: false,
+            type: 1,
+            closeBtn:false,
+            shadeClose:true,
+            area: ['600px', '360px'],
+            content: html
+        });
+    });
+</script>
+</body>
+</html>

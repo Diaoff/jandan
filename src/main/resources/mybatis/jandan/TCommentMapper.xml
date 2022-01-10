@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.jandan.comment.mapper.TCommentMapper">
+
+    <resultMap type="TComment" id="TCommentResult">
+        <result property="id"    column="id"    />
+        <result property="postId"    column="post_id"    />
+        <result property="author"    column="author"    />
+        <result property="authorType"    column="author_type"    />
+        <result property="date"    column="date"    />
+        <result property="dateUnix"    column="date_unix"    />
+        <result property="postTitle"    column="post_title"    />
+        <result property="content"    column="content"    />
+        <result property="userId"    column="user_id"    />
+        <result property="votePositive"    column="vote_positive"    />
+        <result property="voteNegative"    column="vote_negative"    />
+    </resultMap>
+
+    <resultMap id="TCommentImagesResult" type="TComment" extends="TCommentResult">
+        <!-- 配置user对象中accounts集合的映射 -->
+        <collection property="images" ofType="Images" select="com.ruoyi.project.jandan.images.mapper.ImagesMapper.selectImagesByModelId"
+                    column="id"></collection>
+    </resultMap>
+
+    <sql id="selectTCommentVo">
+        select id, post_id, author, author_type, date, date_unix, post_title, content, user_id, vote_positive, vote_negative from t_comment
+    </sql>
+
+    <select id="selectTCommentList" parameterType="TComment" resultMap="TCommentResult">
+        <include refid="selectTCommentVo"/>
+        <where>
+            <if test="postId != null "> and post_id = #{postId}</if>
+            <if test="author != null  and author != ''"> and author like lower(concat('%', #{author}, '%'))</if>
+            <if test="authorType != null "> and author_type = #{authorType}</if>
+            <if test="date != null "> and date = #{date}</if>
+            <if test="dateUnix != null "> and date_unix = #{dateUnix}</if>
+            <if test="postTitle != null  and postTitle != ''"> and post_title = #{postTitle}</if>
+            <if test="content != null  and content != ''"> and content  like lower(concat('%', #{content}, '%'))</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="votePositive != null "> and vote_positive = #{votePositive}</if>
+            <if test="voteNegative != null "> and vote_negative = #{voteNegative}</if>
+        </where>
+        order by id desc
+    </select>
+
+
+
+    <insert id="insertTComment" parameterType="TComment">
+        insert into t_comment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="postId != null">post_id,</if>
+            <if test="author != null">author,</if>
+            <if test="authorType != null">author_type,</if>
+            <if test="date != null">date,</if>
+            <if test="dateUnix != null">date_unix,</if>
+            <if test="postTitle != null">post_title,</if>
+            <if test="content != null">content,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="votePositive != null">vote_positive,</if>
+            <if test="voteNegative != null">vote_negative,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="postId != null">#{postId},</if>
+            <if test="author != null">#{author},</if>
+            <if test="authorType != null">#{authorType},</if>
+            <if test="date != null">#{date},</if>
+            <if test="dateUnix != null">#{dateUnix},</if>
+            <if test="postTitle != null">#{postTitle},</if>
+            <if test="content != null">#{content},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="votePositive != null">#{votePositive},</if>
+            <if test="voteNegative != null">#{voteNegative},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTComment" parameterType="TComment">
+        update t_comment
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="postId != null">post_id = #{postId},</if>
+            <if test="author != null">author = #{author},</if>
+            <if test="authorType != null">author_type = #{authorType},</if>
+            <if test="date != null">date = #{date},</if>
+            <if test="dateUnix != null">date_unix = #{dateUnix},</if>
+            <if test="postTitle != null">post_title = #{postTitle},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="votePositive != null">vote_positive = #{votePositive},</if>
+            <if test="voteNegative != null">vote_negative = #{voteNegative},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTCommentById" parameterType="Long">
+        delete from t_comment where id = #{id}
+    </delete>
+
+    <delete id="deleteTCommentByIds" parameterType="String">
+        delete from t_comment where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectTCommentById" parameterType="Long" resultMap="TCommentImagesResult">
+        <include refid="selectTCommentVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectTCommentImagesById" parameterType="Long" resultMap="TCommentImagesResult">
+        select a.id, a.post_id, a.author, a.author_type, a.date, a.date_unix, a.post_title, a.content, a.user_id, a.vote_positive, a.vote_negative,
+            b.url, b.full_url, b.host, b.thumb_size, b.ext, b.file_name, b.fd_model_id, b.fd_model_name
+        from t_comment a
+        left join images b on b.fd_model_id = a.id and b.fd_model_name ='com.ruoyi.project.jandan.comment.domain.TComment'
+        where a.id = #{id}
+    </select>
+
+    <select id="selectTCommentImagesList" parameterType="TComment" resultMap="TCommentImagesResult">
+        <include refid="selectTCommentVo"/>
+        <where>
+            <if test="postId != null "> and post_id = #{postId}</if>
+            <if test="author != null  and author != ''"> and author like lower(concat('%', #{author}, '%'))</if>
+            <if test="authorType != null "> and author_type = #{authorType}</if>
+            <if test="date != null "> and date = #{date}</if>
+            <if test="dateUnix != null "> and date_unix = #{dateUnix}</if>
+            <if test="postTitle != null  and postTitle != ''"> and post_title = #{postTitle}</if>
+            <if test="content != null  and content != ''"> and content  like lower(concat('%', #{content}, '%'))</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="votePositive != null "> and vote_positive > #{votePositive}</if>
+            <if test="voteNegative != null "> and vote_negative = #{voteNegative}</if>
+        </where>
+        order by id desc
+    </select>
+</mapper>

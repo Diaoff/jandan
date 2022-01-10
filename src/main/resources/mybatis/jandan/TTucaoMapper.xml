@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.jandan.tucao.mapper.TTucaoMapper">
+    
+    <resultMap type="TTucao" id="TTucaoResult">
+        <result property="id"    column="id"    />
+        <result property="postId"    column="post_id"    />
+        <result property="author"    column="author"    />
+        <result property="authorType"    column="author_type"    />
+        <result property="date"    column="date"    />
+        <result property="dateUnix"    column="date_unix"    />
+        <result property="content"    column="content"    />
+        <result property="userId"    column="user_id"    />
+        <result property="votePositive"    column="vote_positive"    />
+        <result property="voteNegative"    column="vote_negative"    />
+        <result property="commentId"    column="comment_id"    />
+    </resultMap>
+
+    <sql id="selectTTucaoVo">
+        select id, post_id, author, author_type, date, date_unix, content, user_id, vote_positive, vote_negative, comment_id from t_tucao
+    </sql>
+
+    <select id="selectTTucaoList" parameterType="TTucao" resultMap="TTucaoResult">
+        <include refid="selectTTucaoVo"/>
+        <where>  
+            <if test="postId != null "> and post_id = #{postId}</if>
+            <if test="author != null  and author != ''"> and author = #{author}</if>
+            <if test="authorType != null "> and author_type = #{authorType}</if>
+            <if test="date != null "> and date = #{date}</if>
+            <if test="dateUnix != null "> and date_unix = #{dateUnix}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="votePositive != null "> and vote_positive = #{votePositive}</if>
+            <if test="voteNegative != null "> and vote_negative = #{voteNegative}</if>
+            <if test="commentId != null "> and comment_id = #{commentId}</if>
+        </where>
+    </select>
+    
+    <select id="selectTTucaoById" parameterType="Long" resultMap="TTucaoResult">
+        <include refid="selectTTucaoVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTTucao" parameterType="TTucao">
+        insert into t_tucao
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="postId != null">post_id,</if>
+            <if test="author != null">author,</if>
+            <if test="authorType != null">author_type,</if>
+            <if test="date != null">date,</if>
+            <if test="dateUnix != null">date_unix,</if>
+            <if test="content != null">content,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="votePositive != null">vote_positive,</if>
+            <if test="voteNegative != null">vote_negative,</if>
+            <if test="commentId != null">comment_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="postId != null">#{postId},</if>
+            <if test="author != null">#{author},</if>
+            <if test="authorType != null">#{authorType},</if>
+            <if test="date != null">#{date},</if>
+            <if test="dateUnix != null">#{dateUnix},</if>
+            <if test="content != null">#{content},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="votePositive != null">#{votePositive},</if>
+            <if test="voteNegative != null">#{voteNegative},</if>
+            <if test="commentId != null">#{commentId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTTucao" parameterType="TTucao">
+        update t_tucao
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="postId != null">post_id = #{postId},</if>
+            <if test="author != null">author = #{author},</if>
+            <if test="authorType != null">author_type = #{authorType},</if>
+            <if test="date != null">date = #{date},</if>
+            <if test="dateUnix != null">date_unix = #{dateUnix},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="votePositive != null">vote_positive = #{votePositive},</if>
+            <if test="voteNegative != null">vote_negative = #{voteNegative},</if>
+            <if test="commentId != null">comment_id = #{commentId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTTucaoById" parameterType="Long">
+        delete from t_tucao where id = #{id}
+    </delete>
+
+    <delete id="deleteTTucaoByIds" parameterType="String">
+        delete from t_tucao where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
