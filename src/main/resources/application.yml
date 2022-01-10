@@ -9,14 +9,14 @@ ruoyi:
   # 实例演示开关
   demoEnabled: true
   # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
-  profile: D:/ruoyi/uploadPath
+  profile: /Users/diaoff/code/java/uploadPath
   # 获取ip地址开关
   addressEnabled: false
 
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为80
-  port: 80
+  port: 9090
   servlet:
     # 应用的访问路径
     context-path: /
@@ -31,8 +31,8 @@ server:
 # 日志配置
 logging:
   level:
-    com.ruoyi: debug
-    org.springframework: warn
+    com.ruoyi: off
+    org.springframework: off
 
 # 用户配置
 user:
@@ -78,6 +78,9 @@ mybatis:
     mapperLocations: classpath:mybatis/**/*Mapper.xml
     # 加载全局的配置文件
     configLocation: classpath:mybatis/mybatis-config.xml
+    #configuration:
+      #延迟加载
+      #lazy-loading-enabled: true
 
 # PageHelper分页插件
 pagehelper: 
@@ -95,7 +98,7 @@ shiro:
     # 首页地址
     indexUrl: /index
     # 验证码开关
-    captchaEnabled: true
+    captchaEnabled: false
     # 验证码类型 math 数组计算 char 字符
     captchaType: math
   cookie:
@@ -138,7 +141,7 @@ swagger:
 # 代码生成
 gen: 
   # 作者
-  author: ruoyi
+  author: diaoff
   # 默认生成包路径 system 需改成自己的模块名称 如 system monitor tool
   packageName: com.ruoyi.project.system
   # 自动去除表前缀，默认是true
