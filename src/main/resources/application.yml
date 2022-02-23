@@ -33,6 +33,10 @@ logging:
   level:
     com.ruoyi: off
     org.springframework: off
+    org:
+      springframework:
+        boot:
+          autoconfigure: ERROR
 
 # 用户配置
 user:
