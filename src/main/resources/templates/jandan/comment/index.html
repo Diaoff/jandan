@@ -92,9 +92,16 @@
 
         .search_form {
             position: fixed;
+            margin-top: 30px;
             margin-right: 10px;
         }
 
+        .form_input {
+            border: #00B83F 1px solid;
+        }
+        .link{
+            border-bottom: grey 1px solid;
+        }
     </style>
 </head>
 <body class="gray-bg">
@@ -105,9 +112,15 @@
         <div class="panel panel-default float-right search_form w-96 border-separate border border-green-800">
             <table class="table-auto"  @change="changePost">
                 <tr>
+                    <td class="w-1/2">小图</td>
+                    <td class="w-1/2">
+                        <input type="checkbox" v-model="bigImage">
+                    </td>
+                </tr>
+                <tr>
                     <td class="w-1/2">分区</td>
                     <td class="w-1/2">
-                        <select v-model="postId">
+                        <select v-model="postId" class="form_input">
                             <option value="">所有</option>
                             <option value="26402">无聊图</option>
                             <option value="21183">随手拍</option>
@@ -115,15 +128,23 @@
                             <option value="108629">女装</option>
                         </select>
                     </td>
+                </tr>
+                <tr>
                     <td class="w-1/2">作者</td>
                     <td class="w-1/2">
-                        <input v-model="author">
+                        <input v-model="author" class="form_input">
                     </td>
                 </tr>
                 <tr>
                     <td class="w-1/2">赞</td>
                     <td class="w-1/2">
-                        <input v-model="votePositive">
+                        <input v-model="votePositive" class="form_input">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="w-1/2">内容</td>
+                    <td class="w-1/2">
+                        <input v-model="content" class="form_input">
                     </td>
                 </tr>
             </table>
@@ -138,7 +159,10 @@
                         <span class="like">
                                 赞 <span class="number">{{item.votePositive}}</span>
                                 踩 <span class="number">{{item.voteNegative}}</span>
-                            </span>
+                        </span>
+                        <span class="link" @click="openDetails(item.id)">
+                            查看详情
+                        </span>
                     </div>
                 </h3>
             </div>
@@ -149,7 +173,8 @@
                 <li class="list-inline-item" v-for="image in item.images" :key="image">
                     <div class="block_img">
                         <img @click="switchImgSize($event)" src="" style="display: block" v-bind:x-src="image.url"
-                             referrerpolicy="no-referrer" class="small img-thumbnail " alt="Responsive image">
+                             referrerpolicy="no-referrer" class="img-thumbnail " v-bind:class="{'small':bigImage}"
+                             alt="Responsive image">
                     </div>
                 </li>
                 <ul>
@@ -173,9 +198,11 @@
             total: 0,
             lengthThreshold: 50,//当滑动到距离低端50px时，更新数据
             timeThreshold: 300,
+            bigImage: true,
             promise: null,
             postId: null,
             author: null,
+            content: null,
             votePositive:null
         },
         methods: {
@@ -225,7 +252,14 @@
             list: function () {
                 var url = '/jandan/comment/home';
                 var _self = this;
-                var data = {"pageSize": _self.pageSize, "pageNum": _self.pageNum, "postId": _self.postId,"author":_self.author,"votePositive":_self.votePositive};
+                var data = {
+                    "pageSize": _self.pageSize,
+                    "pageNum": _self.pageNum,
+                    "postId": _self.postId,
+                    "author": _self.author,
+                    "content": _self.content,
+                    "votePositive": _self.votePositive
+                };
                 if (window.console) {
                     console.log(data)
                 }
@@ -262,6 +296,9 @@
                 } else {
                     $(obj).addClass("small");
                 }
+            },
+            openDetails:function (id) {
+                window.open("https://jandan.net/t/"+id+"#more","_blank");
             }
         },
         created: function () {

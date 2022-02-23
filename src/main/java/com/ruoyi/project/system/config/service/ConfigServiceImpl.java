@@ -112,7 +112,7 @@ public class ConfigServiceImpl implements IConfigService
     @Override
     public int updateConfig(Config config)
     {
-        config.setUpdateBy(ShiroUtils.getLoginName());
+        //config.setUpdateBy(ShiroUtils.getLoginName());
         int row = configMapper.updateConfig(config);
         if (row > 0)
         {

@@ -27,9 +27,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="host != null  and host != ''"> and host = #{host}</if>
             <if test="thumbSize != null  and thumbSize != ''"> and thumb_size = #{thumbSize}</if>
             <if test="ext != null  and ext != ''"> and ext = #{ext}</if>
-            <if test="fileName != null  and fileName != ''"> and file_name like concat('%', #{fileName}, '%')</if>
+            <if test="fileName != null  and fileName != ''"> and file_name = #{fileName}</if>
             <if test="fdModelId != null  and fdModelId != ''"> and fd_model_id = #{fdModelId}</if>
-            <if test="fdModelName != null  and fdModelName != ''"> and fd_model_name like concat('%', #{fdModelName}, '%')</if>
+            <if test="fdModelName != null  and fdModelName != ''"> and fd_model_name = #{fdModelName}</if>
         </where>
     </select>
     

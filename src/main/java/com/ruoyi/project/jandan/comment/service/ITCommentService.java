@@ -67,4 +67,6 @@ public interface ITCommentService {
 	 * @return 帖子集合
 	 */
 	List<TComment> selectTCommentImagesList(TComment tComment);
+
+	List<Long> selectTCommentIds(TComment tComment);
 }

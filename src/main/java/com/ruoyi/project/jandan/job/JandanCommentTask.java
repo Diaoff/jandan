@@ -45,7 +45,7 @@ public class JandanCommentTask implements PageProcessor {
 	 */
 	public void pullComments(Integer postId, String configKey) {
 		String startId = configService.selectConfigByKey(configKey);
-		logger.debug(StringUtils.format("执行分区爬取： 分区ID{}", postId));
+		logger.error(StringUtils.format("执行分区爬取： 分区ID{}", postId));
 		String url = MessageFormat.format(COMMENT_LIST, String.valueOf(postId));
 		try {
 			URIBuilder uri = new URIBuilder(url).addParameter("start_id", startId);

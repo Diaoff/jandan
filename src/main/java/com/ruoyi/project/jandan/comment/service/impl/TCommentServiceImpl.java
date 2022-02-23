@@ -101,4 +101,9 @@ public class TCommentServiceImpl implements ITCommentService {
 	public List<TComment> selectTCommentImagesList(TComment tComment) {
 		return tCommentMapper.selectTCommentImagesList(tComment);
 	}
+
+	@Override
+	public List<Long> selectTCommentIds(TComment tComment) {
+		return tCommentMapper.selectTCommentIds(tComment);
+	}
 }

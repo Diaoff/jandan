@@ -20,7 +20,7 @@ import java.util.List;
  * @version 1.0 2021-07-27
  * @date: 2021-07-27 17:52
  */
-public class JandanCommentPipeline implements Pipeline {
+public class JandanTocaoPipeline implements Pipeline {
 
 	String configKey;
 
@@ -30,7 +30,7 @@ public class JandanCommentPipeline implements Pipeline {
 
 	IConfigService configService;
 
-	public JandanCommentPipeline(String configKey, ITCommentService commentService, IConfigService configService, IImagesService imagesService) {
+	public JandanTocaoPipeline(String configKey, ITCommentService commentService, IConfigService configService, IImagesService imagesService) {
 		this.configKey = configKey;
 		this.commentService = commentService;
 		this.configService = configService;
@@ -104,14 +104,14 @@ public class JandanCommentPipeline implements Pipeline {
 					}
 				}
 				lastId = String.valueOf(id);
+				if (config != null) {
+					config.setConfigValue(lastId);
+					configService.updateConfig(config);
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 
-		if (config != null) {
-			config.setConfigValue(lastId);
-			configService.updateConfig(config);
-		}
 	}
 }

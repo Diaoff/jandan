@@ -37,6 +37,8 @@ public interface TCommentMapper {
 
 	List<TComment> selectTCommentImagesList(TComment tComment);
 
+	List<Long> selectTCommentIds(TComment tComment);
+
 	/**
 	 * 新增帖子
 	 *

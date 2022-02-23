@@ -124,7 +124,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="postId != null "> and post_id = #{postId}</if>
             <if test="author != null  and author != ''"> and author like lower(concat('%', #{author}, '%'))</if>
             <if test="authorType != null "> and author_type = #{authorType}</if>
-            <if test="date != null "> and date = #{date}</if>
+            <if test="date != null "> and date >= #{date}</if>
             <if test="dateUnix != null "> and date_unix = #{dateUnix}</if>
             <if test="postTitle != null  and postTitle != ''"> and post_title = #{postTitle}</if>
             <if test="content != null  and content != ''"> and content  like lower(concat('%', #{content}, '%'))</if>
@@ -134,4 +134,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
         order by id desc
     </select>
+    <select id="selectTCommentIds" parameterType="TComment" resultType="Long">
+        select id from t_comment
+        <where>
+            <if test="date != null "> and date >= #{date}</if>
+        </where>
+        order by id desc
+    </select>
+
 </mapper>
